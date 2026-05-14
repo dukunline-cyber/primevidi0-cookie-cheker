@@ -1,14 +1,41 @@
 import requests
 import os
 import sys
+import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 BANNER = """
 ╔══════════════════════════════════════════╗
-║   Prime Video Cookie Checker v1.1       ║
+║   Prime Video Cookie Checker v1.2       ║
 ║   by: dukunline-cyber                   ║
 ╚══════════════════════════════════════════╝
 """
+
+def extract_rar_files(source_dir='.', target_dir='./cookies'):
+    """Extract RAR files to target directory"""
+    rar_files = [f for f in os.listdir(source_dir) if f.endswith('.rar')]
+    
+    if not rar_files:
+        return 0
+    
+    os.makedirs(target_dir, exist_ok=True)
+    extracted = 0
+    
+    for rar_file in rar_files:
+        rar_path = os.path.join(source_dir, rar_file)
+        try:
+            print(f'[*] Extracting {rar_file}...')
+            subprocess.run(['unrar', 'x', rar_path, target_dir], 
+                         capture_output=True, check=True)
+            print(f'  [✓] {rar_file} extracted successfully')
+            extracted += 1
+        except subprocess.CalledProcessError as e:
+            print(f'  [✗] Failed to extract {rar_file}: {e}')
+        except FileNotFoundError:
+            print(f'  [!] unrar not found. Please install unrar: sudo apt-get install unrar')
+            break
+    
+    return extracted
 
 def parse_netscape_cookies(cookie_file):
     """Parse Netscape format cookies and convert to HTTP cookie string"""
@@ -56,6 +83,16 @@ def check_cookie(cookie_file):
 
 def main():
     print(BANNER)
+    
+    # Check for RAR files and ask user if they want to extract
+    rar_files = [f for f in os.listdir('.') if f.endswith('.rar')]
+    if rar_files:
+        print(f'[*] Ditemukan {len(rar_files)} file RAR')
+        extract_choice = input('[?] Extract RAR files ke folder cookies? (y/n): ').strip().lower()
+        if extract_choice == 'y':
+            extracted = extract_rar_files('.', './cookies')
+            if extracted > 0:
+                print(f'[✓] {extracted} RAR file(s) extracted\n')
     
     cookie_dir = input('[?] Folder cookies (default: ./cookies): ').strip() or './cookies'
     

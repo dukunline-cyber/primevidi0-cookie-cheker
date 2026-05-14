@@ -1,6 +1,6 @@
-# Prime Video Cookie Checker v1.1
+# Prime Video Cookie Checker v1.2
 
-Bot untuk cek validitas cookie Prime Video secara massal dengan dukungan format Netscape.
+Bot untuk cek validitas cookie Prime Video secara massal dengan dukungan format Netscape dan ekstraksi RAR.
 
 ## Install
 ```bash
@@ -8,12 +8,14 @@ pip install -r requirements.txt
 ```
 
 ## Cara Pakai
-1. Taruh file cookie (.txt) di folder `cookies/`
+1. Jika memiliki file RAR cookie, taruh di folder root (sama level dengan script)
 2. Jalankan:
 ```bash
 python checker.py
 ```
-3. Hasil valid akan disimpan di `results/valid.txt`
+3. Bot akan mendeteksi file RAR dan menawarkan untuk mengekstraknya
+4. Atau taruh file cookie (.txt) langsung di folder `cookies/`
+5. Hasil valid akan disimpan di `results/valid.txt`
 
 ## Format Cookie
 Bot mendukung 2 format cookie:
@@ -38,6 +40,7 @@ at-main-av=Atza|gQBqp6E...; session-token="NDqVEuySGFt3..."
 ```
 
 ## Fitur
+- ✅ Ekstraksi otomatis file RAR
 - ✅ Parsing otomatis format Netscape
 - ✅ Multi-threaded checking untuk performa lebih cepat
 - ✅ Menyimpan hasil cookie yang valid
