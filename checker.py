@@ -5,15 +5,40 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 BANNER = """
 ╔══════════════════════════════════════════╗
-║   Prime Video Cookie Checker v1.0       ║
+║   Prime Video Cookie Checker v1.1       ║
 ║   by: dukunline-cyber                   ║
 ╚══════════════════════════════════════════╝
 """
 
-def check_cookie(cookie_file):
+def parse_netscape_cookies(cookie_file):
+    """Parse Netscape format cookies and convert to HTTP cookie string"""
+    cookies = {}
     try:
         with open(cookie_file, 'r') as f:
-            cookies = f.read().strip()
+            for line in f:
+                line = line.strip()
+                # Skip empty lines and comments
+                if not line or line.startswith('#'):
+                    continue
+                # Netscape format: domain flag path secure expiration name value
+                parts = line.split('\t')
+                if len(parts) >= 7:
+                    name = parts[5]
+                    value = parts[6]
+                    cookies[name] = value
+        
+        # Convert to cookie string format
+        cookie_string = '; '.join([f'{k}={v}' for k, v in cookies.items()])
+        return cookie_string if cookies else None
+    except Exception as e:
+        return None
+
+def check_cookie(cookie_file):
+    try:
+        cookies = parse_netscape_cookies(cookie_file)
+        
+        if not cookies:
+            return cookie_file, 'ERROR: Invalid cookie format'
         
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
